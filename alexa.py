@@ -10,18 +10,17 @@ machine = pyttsx3.init()
 
 
 class Answer:
-    def __init__(self, identify, reply, exec_function):
+    def __init__(self, identify, reply):
         self.identify = identify
         self.reply = reply
-        self.exec_function = exec_function
 
 
 answers = \
-    Answer("horário", "Agora são " + datetime.datetime.now().strftime('%H:%M'), 0), \
-    Answer("amor", "Não posso ter amor, pois sou um robô", 0), \
-    Answer("criador", "Meu criador é o Raphael, conhecido como Rapha", 0), \
-    Answer("namorar", "Não posso namorar, sou apenas um robô", 0), \
-    Answer("angola", "É um local que carece de fome, nunca viram uma feijoada", 0)
+    Answer("horário", "Agora são " + datetime.datetime.now().strftime('%H:%M')), \
+    Answer("amor", "Não posso ter amor, pois sou um robô"), \
+    Answer("criador", "Meu criador é o Raphael, conhecido como Rapha"), \
+    Answer("namorar", "Não posso namorar, sou apenas um robô"), \
+    Answer("angola", "É um local que carece de fome, nunca viram uma feijoada")
 
 
 def get_answer():
