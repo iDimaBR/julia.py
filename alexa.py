@@ -1,10 +1,13 @@
 import sys
-
 import speech_recognition as sr
 import pyttsx3
 import datetime
 import wikipedia
 import pywhatkit
+
+audio = sr.Recognizer()
+machine = pyttsx3.init()
+
 
 class Answer:
     def __init__(self, identify, reply, exec_function):
@@ -13,8 +16,12 @@ class Answer:
         self.exec_function = exec_function
 
 
-audio = sr.Recognizer()
-machine = pyttsx3.init()
+answers = \
+    Answer("horário", "Agora são " + datetime.datetime.now().strftime('%H:%M'), 0), \
+    Answer("amor", "Não posso ter amor, pois sou um robô", 0), \
+    Answer("criador", "Meu criador é o Raphael, conhecido como Rapha", 0), \
+    Answer("namorar", "Não posso namorar, sou apenas um robô", 0), \
+    Answer("angola", "É um local que carece de fome, nunca viram uma feijoada", 0)
 
 
 def get_answer():
@@ -35,20 +42,10 @@ def get_answer():
         return "Error"
 
 
-answers = \
-    Answer("horário", "Agora são " + datetime.datetime.now().strftime('%H:%M'), 0), \
-    Answer("amor", "Não posso ter amor, pois sou um robô", 0),\
-    Answer("namorar", "Não posso namorar, sou apenas um robô", 0),\
-    Answer("angola", "É um local que carece de fome, nunca viram uma feijoada", 0),\
-    Answer("neymar", "", 1),\
-    Answer("selena gomez", "", 1)
-
-
-def get_function_answer(identify):
+def wikipedia_search(command):
     try:
         wikipedia.set_lang('pt')
-        answer = wikipedia.summary(identify, 2)
-        print(answer)
+        answer = wikipedia.summary(command, 2)
     except Exception as e:
         print(e)
         return "Error"
@@ -72,14 +69,22 @@ def listen_user():
         machine.say("Tocando música " + command)
         machine.runAndWait()
     else:
-        answer = "Não sei nada sobre isso"
+        if "quem é" in command:
+            answer = wikipedia_search(command)
+        elif "oque é" in command:
+            answer = wikipedia_search(command)
+        elif "como é" in command:
+            answer = wikipedia_search(command)
+        elif "sabe quem" in command:
+            answer = wikipedia_search(command)
+        elif "o que é" in command:
+            answer = wikipedia_search(command)
+
         for obj in answers:
             if obj.identify in command:
-                if obj.exec_function == 1:
-                    answer = get_function_answer(obj.identify)
-                    break
                 answer = obj.reply
                 break
+
         print(answer)
         machine.say(answer)
         machine.runAndWait()
@@ -87,4 +92,3 @@ def listen_user():
 
 while (1 == 1):
     listen_user()
-
