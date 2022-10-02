@@ -8,6 +8,7 @@ import requests
 import json
 import dotenv
 import os
+import math
 
 
 dotenv.load_dotenv(dotenv.find_dotenv())
@@ -23,11 +24,12 @@ class Answer:
 
 
 answers = \
-    Answer("horário", "Agora são " + datetime.datetime.now().strftime('%H:%M')), \
-    Answer("amor", "Não posso ter amor, pois sou um robô"), \
-    Answer("criador", "Meu criador é o Raphael, conhecido como Rapha"), \
-    Answer("namorar", "Não posso namorar, sou apenas um robô"), \
-    Answer("angola", "É um local que carece de fome, nunca viram uma feijoada")
+    Answer("horário", "Agora são " + datetime.datetime.now().strftime('%H:%M')),\
+    Answer("amor", "Não posso ter amor, pois sou um robô"),\
+    Answer("criador", "Meu criador é o Raphael, conhecido como Rapha"),\
+    Answer("namorar", "Não posso namorar, sou apenas um robô"),\
+    Answer("angola", "É um local que carece de fome, nunca viram uma feijoada"),\
+    Answer("beatbox", "Bouti cabou, bou tica bou bou bou, Bouti cabou, bou tica bou bou bou, Julia yeah")
 
 def get_weather(city):
     city = str(city).capitalize()
@@ -42,10 +44,20 @@ def get_answer():
             listen = audio.listen(source, timeout=3, phrase_time_limit=5)
             command = audio.recognize_google(listen, language='pt-BR')
             command = command.lower()
+
+            if 'ok google' in command:
+                machine.say("Ta achando que eu sou defeituosa que nem essa vadia?")
+                machine.runAndWait()
+                return "Error"
+
+            if 'alexa' in command:
+                machine.say("Quem é essa baranga que todo mundo pensa que sou eu?")
+                machine.runAndWait()
+                return "Error"
+
             if 'júlia' in command:
-                command = command.replace('júlia', '')
+                command = command.replace('júlia ', '')
             else:
-                print("Erro, comando: " + command)
                 return "Error"
         return command
     except Exception as e:
@@ -60,6 +72,41 @@ def get_price(value):
     else:
         value = "%.2f" % float(content[value.replace("-","")]["ask"])
     return "O valor está em R$ " + value
+
+def get_calc(value):
+    if "+" in value:
+        value = value.split(" é ")[1]
+        numbers = str(value).strip().split("+")
+        number1 = numbers[0]
+        number2 = numbers[1]
+        return "O resultado é " + str(int(number1) + int(number2))
+    if "/" in value:
+        value = value.split(" é ")[1]
+        numbers = str(value).strip().split("/")
+        number1 = numbers[0]
+        number2 = numbers[1]
+        return "O resultado é " + str(float(number1) / float(number2))
+    if "-" in value:
+        value = value.split(" é ")[1]
+        numbers = str(value).strip().split("-")
+        number1 = numbers[0]
+        number2 = numbers[1]
+        return "O resultado é " + str(int(number1) - int(number2))
+    if " x " in value:
+        value = value.split(" é ")[1]
+        numbers = str(value).strip().split("x")
+        number1 = numbers[0]
+        number2 = numbers[1]
+        return "O resultado é " + str(int(number1) * int(number2))
+    if "raiz quadrada" in value:
+        if "qual a" in value:
+            value = value.split("qual a")[1]
+        if "qual é" in value:
+            value = value.split(" é ")[1]
+        
+        source_number = str(''.join(filter(str.isdigit, value.split("raiz quadrada")[1])))
+        return "A raiz de " + str(source_number) + " é " + ("%.2f" % float(math.sqrt(int(source_number))))
+    return "Não sei"
 
 
 def wikipedia_search(command):
@@ -87,19 +134,20 @@ def listen_user():
         command = command.split("tocar música")[1]
         print("Tocando " + command.strip())
         music = pywhatkit.playonyt(command)
+        print(music)
         machine.say("Tocando música " + command)
         machine.runAndWait()
     else:
         if "quem é" in command:
-            answer = wikipedia_search(command.split("é")[1])
+            answer = wikipedia_search(command.split(" é ")[1])
+        elif "quem foi" in command:
+            answer = wikipedia_search(command.split(" é ")[1])
         elif "oque é" in command:
-            answer = wikipedia_search(command.split("é")[1])
+            answer = wikipedia_search(command.split(" é ")[1])
         elif "como é" in command:
-            answer = wikipedia_search(command.split("é")[1])
-        elif "sabe quem" in command:
-            answer = wikipedia_search(command.split("quem")[1])
+            answer = wikipedia_search(command.split(" é ")[1])
         elif "o que é" in command:
-            answer = wikipedia_search(command.split("é")[1])
+            answer = wikipedia_search(command.split(" é ")[1])
         elif "dólar" in command:
             answer = get_price("USD-BRL")
         elif "euro" in command:
@@ -110,6 +158,10 @@ def listen_user():
             answer = get_price("GBP-BRL")
         elif "temperatura em" in command:
             answer = get_weather(command.split(" em ")[1])
+        elif "quanto é":
+            answer = get_calc(command)
+        elif "quanto que é":
+            answer = get_calc(command)
         else:
             answer = "Não sei nada sobre isso"
 
