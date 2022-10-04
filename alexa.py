@@ -73,41 +73,6 @@ def get_price(value):
         value = "%.2f" % float(content[value.replace("-","")]["ask"])
     return "O valor está em R$ " + value
 
-def get_calc(value):
-    if "+" in value:
-        value = value.split(" é ")[1]
-        numbers = str(value).strip().split("+")
-        number1 = numbers[0]
-        number2 = numbers[1]
-        return "O resultado é " + str(int(number1) + int(number2))
-    if "/" in value:
-        value = value.split(" é ")[1]
-        numbers = str(value).strip().split("/")
-        number1 = numbers[0]
-        number2 = numbers[1]
-        return "O resultado é " + str(float(number1) / float(number2))
-    if "-" in value:
-        value = value.split(" é ")[1]
-        numbers = str(value).strip().split("-")
-        number1 = numbers[0]
-        number2 = numbers[1]
-        return "O resultado é " + str(int(number1) - int(number2))
-    if " x " in value:
-        value = value.split(" é ")[1]
-        numbers = str(value).strip().split("x")
-        number1 = numbers[0]
-        number2 = numbers[1]
-        return "O resultado é " + str(int(number1) * int(number2))
-    if "raiz quadrada" in value:
-        if "qual a" in value:
-            value = value.split("qual a")[1]
-        if "qual é" in value:
-            value = value.split(" é ")[1]
-        
-        source_number = str(''.join(filter(str.isdigit, value.split("raiz quadrada")[1])))
-        return "A raiz de " + str(source_number) + " é " + ("%.2f" % float(math.sqrt(int(source_number))))
-    return "Não sei"
-
 
 def wikipedia_search(command):
     try:
@@ -158,10 +123,6 @@ def listen_user():
             answer = get_price("GBP-BRL")
         elif "temperatura em" in command:
             answer = get_weather(command.split(" em ")[1])
-        elif "quanto é":
-            answer = get_calc(command)
-        elif "quanto que é":
-            answer = get_calc(command)
         else:
             answer = "Não sei nada sobre isso"
 
